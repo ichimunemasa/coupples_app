@@ -32,7 +32,7 @@ class Application extends Controller {
   }
 
   def getDetail(place_id:String) = Action{
-  	val url = "https://maps.googleapis.com/maps/api/place/details/json?key=AIzaSyD--z9mp1nmbN6HYWuugG-YjiUgb9hXFE8"
+  	val url = "https://maps.googleapis.com/maps/api/place/details/json?key=Your API Key"
 	val place = "&place_id" + place_id
 	val api = url + place
 	//val source = Source.fromURL(api,"utf-8")
@@ -43,7 +43,7 @@ class Application extends Controller {
   }
 
   def getArea(latitude:Double,longitude:Double,genre:String) = Action{
-    val url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=YOUR KEY"
+    val url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=YOUR API KEY"
     val location = "&location="+latitude+","+longitude
 	val types = "&types="+genre
 	val rankby = "&rankby=distance"
