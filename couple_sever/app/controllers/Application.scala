@@ -34,7 +34,7 @@ class Application extends Controller {
   }
 
   def getDetail(place_id:String) = Action{
-  	val url = "https://maps.googleapis.com/maps/api/place/details/json?key=Your API Key"
+  	val url = "https://maps.googleapis.com/maps/api/place/details/json?key=" + sys.env("API_Key")
 	  val place = "&placeid=" + place_id
 	  val api = url + place
 	  val source = Source.fromURL(api,"utf-8")
@@ -66,13 +66,16 @@ class Application extends Controller {
   }
 
   def getArea(latitude:Double,longitude:Double,genre:String) = Action{
-    val url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=Your API Key"
-    val location = "&location="+latitude+","+longitude
-	  val types = "&types="+genre
-	  val rankby = "&rankby=distance"
-	  val api = url + location + types + rankby
-	  val source = Source.fromURL(api,"utf-8")
-    val str = source.getLines.mkString
+    	val url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=" + sys.env("API_Key")
+    	val location = "&location="+latitude+","+longitude
+	var types = "&types="+genre
+	val rankby = "&rankby=distance"
+	if(genre == "None"){
+		types = ""	
+	}
+	val api = url + location + rankby + types
+	val source = Source.fromURL(api,"utf-8")
+    	val str = source.getLines.mkString
     //println(api)
     val jsValue:JsValue = Json.parse(str)
 	  val results = (jsValue \ "results")
@@ -157,39 +160,5 @@ class Application extends Controller {
 
 
   }
-
-
-/* 妥協策
-  def getArea(latitude:Double,longitude:Double,genre:String) = Action{
-    val url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=AIzaSyD--z9mp1nmbN6HYWuugG-YjiUgb9hXFE8"
-    val location = "&location="+latitude+","+longitude
-  val types = "&types="+genre
-  val rankby = "&rankby=distance"
-  val api = url + location + types + rankby
-  val source = Source.fromURL(api,"utf-8")
-    val str = source.getLines.mkString
-    val jsValue:JsValue = Json.parse(str)
-  val results = (jsValue \ "results")
-    val returnJson = Json.toJson(
-      Map(
-      "geometry" -> (jsValue \ "results" \\ "geometry"),
-    //"lat" -> (results(0) \ "geometry" \ "location" \ "lat"),
-    //"lng" -> (results(0) \ "geometry" \ "location" \ "lng").as[Any],
-        "names" -> (jsValue \ "results" \\ "name"),
-    //"name" -> (results(0) \ "name")
-    "place_id" -> (jsValue \ "results" \\ "place_id"),
-    "icon" -> (jsValue \ "results" \\ "icon"),
-    "genre" -> (jsValue \ "results" \\ "types"),
-    //"price_level" -> (jsValue \ "results" \\ "pricelevel"),
-    //"rating" -> (jsValue \ "results" \\ "rating"),
-    "reference" -> (jsValue \ "results" \\ "reference")
-      )
-    )
-  println(Json.prettyPrint(returnJson))
-  Ok(Json.prettyPrint(returnJson)).as("application/json; charset=utf-8")
-
-
-  }
-*/
 
 }
